@@ -17,7 +17,7 @@ OBJECTS=$(SOURCES:$(SOURCES_DIR)/%.c=$(OBJECTS_DIR)/%.o)
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS) boolector
+$(EXECUTABLE): $(OBJECTS) 
 	echo ${BASE_DIR}
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
