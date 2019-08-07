@@ -1,5 +1,8 @@
-import org.jetbrains.research.boolector.*;
+package org.jetbrains.research.boolector;
+
 import org.junit.Test;
+
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -139,7 +142,7 @@ public class BoolectorNodeTest {
         x.getID();
         BoolectorSat.getBoolectorSat();
         boolectorAssert("000101", ite);
-        assertEquals("test", bitvec.getSymbol());
+        assertTrue(Pattern.compile("test(!\\d)?").matcher(bitvec.getSymbol()).matches());
         assertFalse(x.isBoolConst());
         assertFalse(bitvec.isBitvecConst());
         int i = 0;

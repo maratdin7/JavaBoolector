@@ -9,7 +9,8 @@ public class Btor {
 
     static {
         try {
-            NativeUtils.loadLibraryFromJar("/libJavaBoolector.so");
+            NativeUtils.loadLibrary("boolector-3.0.0");
+            NativeUtils.loadLibrary("boolector-jni-3.0.0");
         } catch (IOException e) {
             // This is probably not the best way to handle exception :-)
             e.printStackTrace();

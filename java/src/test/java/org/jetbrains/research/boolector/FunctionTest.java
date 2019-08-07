@@ -1,4 +1,5 @@
-import org.jetbrains.research.boolector.*;
+package org.jetbrains.research.boolector;
+
 import org.junit.Test;
 
 import java.util.Arrays;

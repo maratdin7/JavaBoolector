@@ -1,5 +1,5 @@
-import org.jetbrains.research.boolector.BitvecSort;
-import org.jetbrains.research.boolector.Btor;
+package org.jetbrains.research.boolector;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
