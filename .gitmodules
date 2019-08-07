@@ -1,6 +1,3 @@
-[submodule "c/boolector"]
-	path = c/boolector
-	url = https://github.com/boolector/boolector
-[submodule "java/boolector"]
-	path = java/boolector
+[submodule "boolector"]
+	path = boolector
 	url = https://github.com/Boolector/boolector.git
