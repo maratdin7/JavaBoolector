@@ -1,11 +1,11 @@
 JavaBoolector
 ===============================================================================
-Java bindings for Boolector SMT solver
+Java bindings for [Boolector](https://github.com/boolector/boolector) SMT solver
 
 Build
 -------------------------------------------------------------------------------
 ```
-	make -B boolector
-	mvn clean package
+make -B boolector
+mvn clean package
 ```
 
