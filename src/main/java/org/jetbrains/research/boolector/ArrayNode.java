@@ -7,13 +7,13 @@ public class ArrayNode extends BoolectorNode {
         super(ref);
     }
 
-    public static ArrayNode arrayNode(ArraySort sort, String name) {
+    static ArrayNode arrayNode(ArraySort sort, String name) {
         name = name + "!" + numberArray;
         numberArray++;
         return new ArrayNode(Native.array(sort.ref, name));
     }
 
-    public static ArrayNode constArrayNode(BitvecSort indexSort, BitvecNode element) {
+    static ArrayNode constArrayNode(BitvecSort indexSort, BitvecNode element) {
         BitvecSort elementsSort = element.getSort().toBitvecSort();
         ArraySort arraySort = ArraySort.arraySort(indexSort, elementsSort);
         return new ArrayNode(Native.constArray(arraySort.ref, indexSort.ref, element.ref));

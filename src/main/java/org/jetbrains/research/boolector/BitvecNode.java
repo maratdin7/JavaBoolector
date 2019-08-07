@@ -8,7 +8,7 @@ public class BitvecNode extends BoolectorNode {
 
     private static Set<String> setConstName = new HashSet<>(); // мб HashMap и без matchNodeByName
 
-    public static void setConstNameClear() {
+    static void setConstNameClear() {
         setConstName.clear();
     }
 
@@ -16,7 +16,7 @@ public class BitvecNode extends BoolectorNode {
         super(ref);
     }
 
-    public static BitvecNode var(BitvecSort sort, String name, boolean fresh) {
+    static BitvecNode var(BitvecSort sort, String name, boolean fresh) {
         if (fresh) return new BitvecNode(Native.var(sort.ref, name + "!" + numberBitvec++));
         else if (setConstName.contains(name)) return matchNodeByName(name);
         else {
@@ -29,19 +29,19 @@ public class BitvecNode extends BoolectorNode {
         return new BitvecNode((Native.matchNodeByName(name)));
     }
 
-    public static BitvecNode zero(BitvecSort sort) {
+    static BitvecNode zero(BitvecSort sort) {
         return new BitvecNode(Native.zero(sort.ref));
     }
 
-    public static BitvecNode constBitvec(String bits) {
+    static BitvecNode constBitvec(String bits) {
         return new BitvecNode(Native.constBitvec(bits));
     }
 
-    public static BitvecNode constInt(int value, BitvecSort sort) {
+    static BitvecNode constInt(int value, BitvecSort sort) {
         return new BitvecNode(Native.constInt(value, sort.ref));
     }
 
-    public static BitvecNode constLong(long value, BitvecSort sort) {
+    static BitvecNode constLong(long value, BitvecSort sort) {
         return new BitvecNode(Native.constLong(String.valueOf(value), sort.ref));
     }
 

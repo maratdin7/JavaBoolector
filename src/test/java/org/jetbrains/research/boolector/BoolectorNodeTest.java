@@ -12,11 +12,11 @@ public class BoolectorNodeTest {
     public void bitvecNodeFirst() {
         Btor btor = new Btor();
         BitvecSort sort = BitvecSort.bitvecSort(8);
-        BitvecNode x = BitvecNode.var(sort, "nullINc", true);
-        BitvecNode y = BitvecNode.var(sort, "nullINc", true);
+        BitvecNode x = btor.var(sort, "nullINc", true);
+        BitvecNode y = btor.var(sort, "nullINc", true);
         BitvecNode ansXor = x.xor(y);
         BitvecNode ansOr = andNot(x, y).or(andNot(y, x));
-        BoolNode eq = ansXor.eq(ansOr); //fdskfdjsfkjdsklfjdskfjkldsjfkl
+        BoolNode eq = ansXor.eq(ansOr);
         BoolNode formula = eq.not();
         formula.assertForm();
         Btor.Status result = btor.check();
@@ -32,14 +32,14 @@ public class BoolectorNodeTest {
     public void bitvecNodeSecond() {
         Btor btor = new Btor();
         BitvecSort sort = BitvecSort.bitvecSort(8);
-        BitvecNode x = BitvecNode.var(sort, "nullINc", true);
-        BitvecNode y = BitvecNode.var(sort, "nullINc", true);
-        BitvecNode zero = BitvecNode.zero(sort);
+        BitvecNode x = btor.var(sort, "nullINc", true);
+        BitvecNode y = btor.var(sort, "nullINc", true);
+        BitvecNode zero = btor.zero(sort);
         BoolNode xSgtZero = x.sgt(zero);
         BoolNode ySgtZero = y.sgt(zero);
         BoolNode varsSgtZero = xSgtZero.and(ySgtZero);
 
-        BitvecNode add = x.add(y);   // saddo???
+        BitvecNode add = x.add(y);
         BoolNode addSgtZero = add.sgt(zero);
         BoolNode overflow = add.sgt(x);
         BoolNode varsSgt = varsSgtZero.and(overflow);
@@ -53,10 +53,10 @@ public class BoolectorNodeTest {
         Btor btor = new Btor();
         BitvecNode x, y, longConst, sext, uext, slice, neg, add, sub, mul, sdiv, udiv, smod, urem, sll, srl, sra, concat;
         BoolNode sgt, sgte, slt, slte;
-        x = BitvecNode.constBitvec("000101");
-        y = BitvecNode.constBitvec("000011");
-        BitvecSort long_sort = BitvecSort.bitvecSort(64);
-        longConst = BitvecNode.constLong(3000000000L, long_sort);
+        x = btor.constBitvec("000101");
+        y = btor.constBitvec("000011");
+        BitvecSort longSort = BitvecSort.bitvecSort(64);
+        longConst = btor.constLong(3000000000L, longSort);
 
 
         sext = x.sext(4);
@@ -78,13 +78,13 @@ public class BoolectorNodeTest {
         srl = x.srl(y);
         sra = x.sra(y);
         concat = x.concat(y);
-        BitvecNode var = BitvecNode.var(long_sort, "test", false);
-        BitvecNode noFresh = BitvecNode.var(long_sort, "test", false);
-        x = BitvecNode.constInt(-5, long_sort);
+        BitvecNode var = btor.var(longSort, "test", false);
+        BitvecNode noFresh = btor.var(longSort, "test", false);
+        x = BitvecNode.constInt(-5, longSort);
         btor.check();
 
         long assignment = x.assignment();
-        BoolNode test = BoolNode.constBool(true);
+        BoolNode test = btor.constBool(true);
         boolectorAssert("0000000000000000000000000000000010110010110100000101111000000000", longConst);
         boolectorAssert("0000000101", sext);
         boolectorAssert("0000000101", uext);
@@ -115,8 +115,8 @@ public class BoolectorNodeTest {
     public void BoolNodeTest() {
         Btor btor = new Btor();
         BoolNode x, y, or, xor, iff;
-        x = BoolNode.constBool(true);
-        y = BoolNode.constBool(false);
+        x = btor.constBool(true);
+        y = btor.constBool(false);
         or = x.or(y);
         xor = x.xor(y);
         iff = x.iff(y);
@@ -132,13 +132,13 @@ public class BoolectorNodeTest {
         Btor btor = new Btor();
         BoolectorNode x, y, bool, bitvec, ite;
 
-        x = BitvecNode.constBitvec("000101");
-        y = BitvecNode.constBitvec("000011");
+        x = btor.constBitvec("000101");
+        y = btor.constBitvec("000011");
 
-        bool = BitvecNode.constBitvec("1");
+        bool = btor.constBitvec("1");
         ite = x.ite(bool.toBoolNode(), y);
         BoolectorSort getSort = x.getSort();
-        bitvec = BitvecNode.var(getSort.toBitvecSort(), "test", true);
+        bitvec = btor.var(getSort.toBitvecSort(), "test", true);
         x.getID();
         btor.check();
         boolectorAssert("000101", ite);
@@ -162,16 +162,16 @@ public class BoolectorNodeTest {
         ArrayNode arrayConst, array;
         BitvecSort index;
 
-        x = BitvecNode.constBitvec("000101");
-        y = BitvecNode.constBitvec("000011");
-        i = BitvecNode.constBitvec("000000");
-        j = BitvecNode.constBitvec("100000");
+        x = btor.constBitvec("000101");
+        y = btor.constBitvec("000011");
+        i = btor.constBitvec("000000");
+        j = btor.constBitvec("100000");
 
         index = x.getSort().toBitvecSort();
         ArraySort sort = ArraySort.arraySort(index, index);
-        array = ArrayNode.arrayNode(sort, "Temp");
+        array = btor.arrayNode(sort, "Temp");
 
-        arrayConst = ArrayNode.constArrayNode(index, x);
+        arrayConst = btor.constArrayNode(index, x);
         BoolNode eq = arrayConst.read(i).eq(arrayConst.read(j));
         btor.check();
         boolectorAssert("1", eq);
