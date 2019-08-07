@@ -7,6 +7,7 @@ LDFLAGS=-fPIC -shared -L${TARGET_DIR} -lboolector-3.0.0
 SOURCES_DIR=${BASE_DIR}/src/main/c
 OBJECTS_DIR=${BASE_DIR}/target/c
 TARGET_DIR=${BASE_DIR}/target/classes
+BOOLECTOR_DIR=${BASE_DIR}/boolector
 
 EXECUTABLE=${TARGET_DIR}/libboolector-jni-3.0.0.so
 BOOLECTOR_EXECUTABLE=${TARGET_DIR}/libboolector-3.0.0.so
@@ -30,15 +31,15 @@ boolector:
 	git submodule update
 
 	cd ${BASE_DIR}/boolector
-	./contrib/setup-lingeling.sh || exit 1
-	./contrib/setup-btor2tools.sh || exit 1
-	./configure.sh --shared --only-lingeling || exit 1
+	./contrib/setup-lingeling.sh || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
+	./contrib/setup-btor2tools.sh || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
+	./configure.sh --shared --only-lingeling || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
 	cd build
-	make || exit 1
+	make || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
 	cd ${BASE_DIR}
 
 $(BOOLECTOR_EXECUTABLE): boolector
-	cp ${BASE_DIR}/boolector/build/lib/libboolector.so ${BOOLECTOR_EXECUTABLE}
+	cp ${BOOLECTOR_DIR}/build/lib/libboolector.so ${BOOLECTOR_EXECUTABLE}
 
 clean:
 	rm -rf $(OBJECTS_DIR) $(EXECUTABLE) $(BOOLECTOR_EXECUTABLE)
