@@ -36,7 +36,7 @@ import java.nio.file.*;
  * @see <a href="http://adamheinrich.com/blog/2012/how-to-load-native-jni-library-from-jar">http://adamheinrich.com/blog/2012/how-to-load-native-jni-library-from-jar</a>
  * @see <a href="https://github.com/adamheinrich/native-utils">https://github.com/adamheinrich/native-utils</a>
  */
-class NativeUtils {
+public class NativeUtils {
 
     /**
      * The minimum length a prefix for a file has to have according to {@link File#createTempFile(String, String)}}.
@@ -106,7 +106,7 @@ class NativeUtils {
      *                                  (restriction of {@link File#createTempFile(java.lang.String, java.lang.String)}).
      * @throws FileNotFoundException    If the file could not be found inside the JAR.
      */
-    static void loadLibraryFromJar(String path) throws IOException {
+    public static void loadLibraryFromJar(String path) throws IOException {
 
         if (null == path || !path.startsWith("/")) {
             throw new IllegalArgumentException("The path has to be absolute (start with '/').");

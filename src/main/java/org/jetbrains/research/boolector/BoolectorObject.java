@@ -2,8 +2,7 @@ package org.jetbrains.research.boolector;
 import java.util.Objects;
 
 public abstract class BoolectorObject {
-
-    public final long ref;
+    protected final long ref;
 
     BoolectorObject(long ref) {
         this.ref = ref;
@@ -11,7 +10,7 @@ public abstract class BoolectorObject {
 
     abstract public void release();
 
-    static long[] toLong(BoolectorObject[] boolectorObj) {
+    public static long[] toLong(BoolectorObject[] boolectorObj) {
         int size = boolectorObj.length;
         long[] toLong = new long[size];
         for (int i = 0; i < size; i++) {

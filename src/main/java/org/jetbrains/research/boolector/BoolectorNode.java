@@ -1,12 +1,44 @@
 package org.jetbrains.research.boolector;
 
 public class BoolectorNode extends BoolectorObject {
+    public enum Kind {
+        BOOLNODE(0),
+        BITVECNODE(1),
+        ARRAYNODE(2),
+        UNKNOWN;
+
+        private final int intValue;
+
+        Kind() {
+            this.intValue = -1;
+        }
+
+        Kind(int value) {
+            this.intValue = value;
+        }
+
+        public static Kind fromInt(int i) {
+            if (BOOLNODE.toInt() == i) return BOOLNODE;
+            if (BITVECNODE.toInt() == i) return BITVECNODE;
+            if (ARRAYNODE.toInt() == i) return BITVECNODE;
+
+            // special case for booleans and floats
+            if (i == 3) return BOOLNODE;
+            if (i == 4) return BITVECNODE;
+
+            return UNKNOWN;
+        }
+
+        public final int toInt() {
+            return this.intValue;
+        }
+    }
+
+    private Kind kind = Kind.UNKNOWN;
 
     BoolectorNode(long ref) {
         super(ref);
     }
-
-    private TypeNode kind = TypeNode.UNKNOWN;
 
     public void release() {
         Native.releaseNode(ref);
@@ -47,7 +79,7 @@ public class BoolectorNode extends BoolectorObject {
     public void assume() {
         Native.assume(ref);
     }
-    //dsfjsklxfjksdljfklsdjfklsdjfklsjfkls
+
     public BitvecNode toBitvecNode() {
         if (isArrayNode()) throw new ClassCastException();
         return new BitvecNode(ref);
@@ -64,69 +96,40 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public boolean isBoolConst() {
-       int kindObj = Native.kindNode(ref);
-       if (kindObj==0) {
-           kind = TypeNode.BOOLNODE;
-           return true;
-       }
-        else return false;
+        int kindObj = Native.kindNode(ref);
+        if (kindObj == 0) {
+            kind = Kind.BITVECNODE;
+            return true;
+        } else return false;
     }
 
     public boolean isBitvecConst() {
         int kindObj = Native.kindNode(ref);
-        if (kindObj==1) {
-            kind = TypeNode.BITVECNODE;
+        if (kindObj == 1) {
+            kind = Kind.BITVECNODE;
             return true;
-        }
-        else return false;
+        } else return false;
     }
-    public boolean isArrayNode(){
-        if (kind == TypeNode.ARRAYNODE) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.ARRAYNODE;
-        else return false;
+
+    public boolean isArrayNode() {
+        return getKind() == Kind.ARRAYNODE;
     }
 
     public boolean isBoolNode() {
-        if (kind == TypeNode.BOOLNODE) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.BOOLNODE;
-        else return false;
+        return getKind() == Kind.BOOLNODE;
     }
 
     public boolean isBitvecNode() {
-        if (kind == TypeNode.BITVECNODE) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.BITVECNODE;
-        else return false;
+        return (getKind() == Kind.BITVECNODE);
     }
 
+    private Kind getKind() {
+        if (kind != Kind.UNKNOWN) return kind;
 
-
-    private TypeNode kindNode() {
         int kindObj = Native.kindNode(ref);
-        switch (kindObj) {
-            case 0:
-                kind = TypeNode.BOOLNODE;
-                return kind;
-            case 1:
-                kind = TypeNode.BITVECNODE;
-            return kind;
-            case 2:
-                kind = TypeNode.ARRAYNODE;
-            return kind;
-            case 3:
-                kind = TypeNode.BOOLNODE;
-            return kind;
-            case 4:
-                kind = TypeNode.BITVECNODE;
-            return kind;
-            default:
-                kind = TypeNode.UNKNOWN;
-            return kind;
-        }
+        kind = Kind.fromInt(kindObj);
+        return kind;
     }
-
-    /*public BoolectorNode xor(BoolectorNode node) {
-        return new BoolectorNode(Native.xor(ref, node.ref));
-    }*/
 }
 
 

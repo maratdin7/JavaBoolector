@@ -23,7 +23,7 @@ public class BoolectorSort extends BoolectorObject {
         else return new BitvecSort(ref);
     }
 
-    public BoolSort toBooleSort() {
+    public BoolSort toBoolSort() {
         if (isBoolSort()) return new BoolSort(ref);
         else throw new ClassCastException();
     }

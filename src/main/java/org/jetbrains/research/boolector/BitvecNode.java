@@ -4,12 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BitvecNode extends BoolectorNode {
-
     private static Integer numberBitvec = 0;
 
     private static Set<String> setConstName = new HashSet<>(); // мб HashMap и без matchNodeByName
 
-    static void setConstNameClear() {
+    public static void setConstNameClear() {
         setConstName.clear();
     }
 

@@ -10,7 +10,7 @@ public final class Native {
 
     static native void releaseNode(long ref);
 
-    public static native long bitvecSort(int width);
+    static native long bitvecSort(int width);
 
     static native void releaseSort(long ref);
 
@@ -24,7 +24,7 @@ public final class Native {
 
     static native long add(long firstRef, long secondRef);
 
-    public static native long and(long firstRef, long secondRef);
+    static native long and(long firstRef, long secondRef);
 
     static native long or(long firstRef, long secondRef);
 

@@ -15,13 +15,9 @@ public class FunctionTest {
         BitvecSort sort = BitvecSort.bitvecSort(8);
         BitvecNode x = BitvecNode.var(sort, "nullINc", true);
         BitvecNode y = BitvecNode.var(sort, "nullINc", true);
-        BitvecNode oldX = x.copy().toBitvecNode();
-        BitvecNode oldY = y.copy().toBitvecNode();
         BitvecNode a= BitvecNode.constInt(10,sort);
         BitvecNode b = BitvecNode.constInt(20, sort);
         BitvecNode ab = a.add(b);
-        System.out.println(ab.getBits());
-        BoolSort boolSort = BoolSort.boolSort();
         BitvecNode temp = x.add(y);
         BoolectorFun.FuncParam firstParam = BoolectorFun.FuncParam.param(sort,"nullINc");
         BoolectorFun.FuncParam secondParam = BoolectorFun.FuncParam.param(sort,"nullINc");
@@ -31,7 +27,6 @@ public class FunctionTest {
         BitvecNode first = slt.apply(paramX).toBitvecNode();
         BitvecNode second = slt.apply(paramX).toBitvecNode();
         BoolNode eq = first.eq(second);
-        //BoolNode ans =first.and(second);
 
         assertFormuls(btor,eq);
     }
@@ -39,8 +34,8 @@ public class FunctionTest {
     public static void assertFormuls(Btor btor,BoolNode node) {
         BoolNode formula = node.not();
         formula.assertForm();
-        BoolectorSat.Status ans = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, ans);
+        Btor.Status result = btor.check();
+        assertEquals(Btor.Status.UNSAT, result);
 
         btor.btorRelease();
     }
