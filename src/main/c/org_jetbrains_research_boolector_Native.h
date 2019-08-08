@@ -458,9 +458,9 @@ JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_apply
 /*
  * Class:     org_jetbrains_research_boolector_Native
  * Method:    printModel
- * Signature: ()V
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_printModel
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_printModel
   (JNIEnv *, jclass);
 
 /*
@@ -530,9 +530,9 @@ JNIEXPORT jint JNICALL Java_org_jetbrains_research_boolector_Native_getIndexWidt
 /*
  * Class:     org_jetbrains_research_boolector_Native
  * Method:    dumpSmt2
- * Signature: ()V
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2
   (JNIEnv *, jclass);
 
 /*

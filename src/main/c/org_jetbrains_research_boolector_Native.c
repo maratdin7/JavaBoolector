@@ -9,6 +9,19 @@
 #include "boolector.h"
 #include "btoropt.h"
 
+static jstring readFileContent(JNIEnv *env, FILE* file) {
+    rewind(file);
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    rewind(file);
+
+    char* fcontent = (char*) malloc(size);
+    fread(fcontent, 1, size, file);
+    jstring result = (*env)->NewStringUTF(env, fcontent);
+    free(fcontent);
+    return result;
+}
+
 Btor *btor;
 
 JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_btor(JNIEnv *env, jobject jobj) {
@@ -36,8 +49,12 @@ JNIEXPORT jint JNICALL Java_org_jetbrains_research_boolector_Native_simplify(JNI
     return (jint) boolector_simplify(btor);
 }
 
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_printModel(JNIEnv *env, jobject jobj) {
-    boolector_print_model(btor, "smt2", stdout);
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_printModel(JNIEnv *env, jobject jobj) {
+    FILE* tempFile = tmpfile();
+    boolector_print_model(btor, "smt2", tempFile);
+    jstring result = readFileContent(env, tempFile);
+    fclose(tempFile);
+    return result;
 }
 
 JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_btorRelease(JNIEnv *env, jobject jobj) {
@@ -410,8 +427,12 @@ Java_org_jetbrains_research_boolector_Native_getIndexWidth(JNIEnv *env, jobject 
     return width_index;
 }
 
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
-    boolector_dump_smt2(btor, stdout);
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
+    FILE* tempFile = tmpfile();
+    boolector_dump_smt2(btor, tempFile);
+    jstring result = readFileContent(env, tempFile);
+    fclose(tempFile);
+    return result;
 }
 
 JNIEXPORT jboolean JNICALL

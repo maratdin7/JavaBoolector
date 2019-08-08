@@ -45,12 +45,12 @@ public class Btor {
         Native.btorRelease();
     }
 
-    public void dumpSmt2() {
-        Native.dumpSmt2();
+    public String getSmtLib() {
+        return Native.dumpSmt2();
     }
 
-    public void printModel() {
-        Native.printModel();
+    public String model2SmtLib() {
+        return Native.printModel();
     }
 
     public BoolNode constBool(boolean bool) {
