@@ -26,7 +26,7 @@ $(OBJECTS): $(SOURCES) $(BOOLECTOR_EXECUTABLE)
 	$(CC) $(CFLAGS) $< -o $@
 
 .ONESHELL:
-boolector:
+.boolector:
 	git submodule init
 	git submodule update
 
@@ -37,9 +37,13 @@ boolector:
 	cd build
 	make || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
 	cd ${BASE_DIR}
+	touch $@
 
-$(BOOLECTOR_EXECUTABLE): boolector
+$(BOOLECTOR_EXECUTABLE): .boolector
 	cp ${BOOLECTOR_DIR}/build/lib/libboolector.so ${BOOLECTOR_EXECUTABLE}
 
 clean:
-	rm -rf $(OBJECTS_DIR) $(EXECUTABLE) $(BOOLECTOR_EXECUTABLE)
+	rm -rfi $(OBJECTS_DIR) $(EXECUTABLE) $(BOOLECTOR_EXECUTABLE)
+
+clean.boolector:
+	rm -f .boolector
