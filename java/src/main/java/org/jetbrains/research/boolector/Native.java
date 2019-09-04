@@ -114,7 +114,7 @@ public final class Native {
 
     static native long apply(long[] argNodes, int length, long ref);
 
-    static native void printModel();
+    static native String printModel();
 
     static native String getBits(long ref);
 
@@ -132,11 +132,13 @@ public final class Native {
 
     static native int getIndexWidth(long ref);
 
-    static native void dumpSmt2();
+    static native String dumpSmt2();
 
     static native void assume(long ref);
 
     static native long bitvecAssignment(long ref);
 
     static native long matchNodeByName(String name);
+
+    static native long ugt(long firstRef, long secondRef);
 }

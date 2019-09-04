@@ -7,6 +7,7 @@
 #include <btorlog.h>
 #include <stdlib.h>
 #include <math.h>
+#include "jniFileRead.c"
 
 Btor *btor;
 
@@ -35,8 +36,20 @@ JNIEXPORT jint JNICALL Java_org_jetbrains_research_boolector_Native_simplify(JNI
     return (jint) boolector_simplify(btor);
 }
 
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_printModel(JNIEnv *env, jobject jobj) {
-    boolector_print_model(btor, "smt2", stdout);
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_printModel(JNIEnv *env, jobject jobj) {
+    FILE *tmp_model = tmpfile();
+    boolector_print_model(btor, "smt2", tmp_model);
+    jstring model = readFileContent(env, tmp_model);
+    fclose(tmp_model);
+    return model;
+}
+
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
+    FILE *tmp_dump = tmpfile();
+    boolector_dump_smt2(btor, tmp_dump);
+    jstring model = readFileContent(env, tmp_dump);
+    fclose(tmp_dump);
+    return model;
 }
 
 JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_btorRelease(JNIEnv *env, jobject jobj) {
@@ -61,7 +74,7 @@ Java_org_jetbrains_research_boolector_Native_var(JNIEnv *env, jobject jobj, jlon
 JNIEXPORT jlong JNICALL
 Java_org_jetbrains_research_boolector_Native_matchNodeByName(JNIEnv *env, jobject jobj, jstring jsymbol) {
     const char *str = (*env)->GetStringUTFChars(env, jsymbol, 0);
-    BoolectorNode *node = boolector_match_node_by_symbol(btor,str);
+    BoolectorNode *node = boolector_match_node_by_symbol(btor, str);
     (*env)->ReleaseStringUTFChars(env, jsymbol, str);
     return (jlong) node;
 }
@@ -97,17 +110,18 @@ Java_org_jetbrains_research_boolector_Native_getBits(JNIEnv *env, jobject jobj, 
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_jetbrains_research_boolector_Native_bitvecAssignment(JNIEnv *env, jobject jobj, jlong jnode_ref) { //почему работает с отрицательными числами?
+Java_org_jetbrains_research_boolector_Native_bitvecAssignment(JNIEnv *env, jobject jobj,
+                                                              jlong jnode_ref) { //почему работает с отрицательными числами?
     BoolectorNode *node = (BoolectorNode *) jnode_ref;
     int size = boolector_get_width(btor, node);
     const char *bits = boolector_bv_assignment(btor, node);
     long long number = 0;
     long long power = 1;
-    for (int i = size-1; i >= 0; i--) {
+    for (int i = size - 1; i >= 0; i--) {
         if (bits[i] == '1') number += power;
         power *= 2;
     }
-   // printf("%s\n%lli\n", bits, number);
+    // printf("%s\n%lli\n", bits, number);
     boolector_free_bv_assignment(btor, bits);
     return (jlong) number;
 }
@@ -242,6 +256,14 @@ Java_org_jetbrains_research_boolector_Native_sgte(JNIEnv *env, jobject jobj, jlo
     BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
     BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
     return (jlong) boolector_sgte(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_ugt(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_ugt(btor, first_node, second_node);
 }
 
 JNIEXPORT jlong JNICALL
@@ -415,24 +437,6 @@ Java_org_jetbrains_research_boolector_Native_isBitvecSort(JNIEnv *env, jobject j
     return (jboolean) boolector_is_bitvec_sort(btor, s);
 }
 
-JNIEXPORT jint JNICALL
-Java_org_jetbrains_research_boolector_Native_getWidth(JNIEnv *env, jobject jobj, jlong jsort_ref) {
-    BoolectorSort s = (BoolectorSort) jsort_ref;
-    BoolectorNode *node = boolector_var(btor, s, NULL); //djgdjgklfdjkldfjgkfjblkcjvbklvcjb kbjk
-    jint width = (jint) boolector_get_width(btor, node);
-    boolector_release(btor, node);
-    return width;
-}
-
-JNIEXPORT jboolean JNICALL
-Java_org_jetbrains_research_boolector_Native_isBoolSort(JNIEnv *env, jobject jobj, jlong jsort_ref) {
-    BoolectorSort s = (BoolectorSort) jsort_ref;
-    bool isBoolSort =
-            boolector_is_bitvec_sort(btor, s) &&
-            Java_org_jetbrains_research_boolector_Native_getWidth(env, jobj, jsort_ref) == 1;
-    return (jboolean) isBoolSort;
-}
-
 JNIEXPORT jboolean JNICALL
 Java_org_jetbrains_research_boolector_Native_isArraySort(JNIEnv *env, jobject jobj, jlong jsort_ref) {
     BoolectorSort s = (BoolectorSort) jsort_ref;
@@ -540,10 +544,6 @@ Java_org_jetbrains_research_boolector_Native_getIndexWidth(JNIEnv *env, jobject 
     BoolectorNode *array_node = (BoolectorNode *) jarray_ref;
     int width_index = boolector_get_index_width(btor, array_node);
     return width_index;
-}
-
-JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
-    boolector_dump_smt2(btor, stdout);
 }
 
 

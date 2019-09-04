@@ -1,6 +1,11 @@
 package org.jetbrains.research.boolector;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Btor {
     public Btor() {
@@ -21,9 +26,12 @@ public class Btor {
         Native.btorRelease();
     }
 
-    public void dumpSmt2() {Native.dumpSmt2();}
-
-    public void printModel() {
-        Native.printModel();
+    public String dumpSmt2() {
+        return Native.dumpSmt2();
     }
+
+    public String printModel() {
+        return Native.printModel();
+    }
+
 }

@@ -4,6 +4,7 @@
 *.class
 *.cmake
 *.so
+*.cbp
 /c/CMakeFiles
 */.idea
 *.txt

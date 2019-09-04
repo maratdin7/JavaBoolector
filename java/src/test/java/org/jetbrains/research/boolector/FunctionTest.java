@@ -1,4 +1,5 @@
-import org.jetbrains.research.boolector.*;
+package org.jetbrains.research.boolector;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,8 +19,7 @@ public class FunctionTest {
         BitvecNode oldY = y.copy().toBitvecNode();
         BitvecNode a= BitvecNode.constInt(10,sort);
         BitvecNode b = BitvecNode.constInt(20, sort);
-        BitvecNode ab = a.add(b);
-        System.out.println(ab.getBits());
+        BitvecNode ab = a.add(b);;
         BoolSort boolSort = BoolSort.boolSort();
         BitvecNode temp = x.add(y);
         BoolectorFun.FuncParam firstParam = BoolectorFun.FuncParam.param(sort,"nullINc");
@@ -30,12 +30,10 @@ public class FunctionTest {
         BitvecNode first = slt.apply(paramX).toBitvecNode();
         BitvecNode second = slt.apply(paramX).toBitvecNode();
         BoolNode eq = first.eq(second);
-        //BoolNode ans =first.and(second);
-
         assertFormuls(btor,eq);
     }
 
-    public static void assertFormuls(Btor btor,BoolNode node) {
+    private static void assertFormuls(Btor btor, BoolNode node) {
         BoolNode formula = node.not();
         formula.assertForm();
         BoolectorSat.Status ans = BoolectorSat.getBoolectorSat();

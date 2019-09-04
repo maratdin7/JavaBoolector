@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="Make shared lib to JavaBoolector">
+
+    <!--  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+          <classpath>
+              <pathelement location="${runningLocation}/antlib/ant-contrib-1.0b3.jar" />
+          </classpath>
+      </taskdef>
+  -->
+    <target name="Cloning boolector">
+
+        <exec executable="git" dir="${boolector.c.dir}">
+            <arg value="submodule"/>
+            <arg value="init"/>
+        </exec>
+
+        <exec executable="git" dir="${boolector.c.dir}" failifexecutionfails="true">
+            <arg value="submodule"/>
+            <arg value="update"/>
+        </exec>
+    </target>
+
+    <target name="Check file" depends="Cloning boolector">
+        <condition property="build.found">
+            <not>
+                <available file="${boolector.c.dir}/boolector/build"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="Install boolector" depends="Check file" if="${build.found}">
+
+        <property name="boolectorDir" value="${boolector.c.dir}/boolector"/>
+        <exec executable="./contrib/setup-lingeling.sh" dir="${boolectorDir}"/>
+        <exec executable="./contrib/setup-btor2tools.sh" dir="${boolectorDir}"/>
+        <exec executable="./configure.sh" dir="${boolectorDir}">
+            <arg value="--shared"/>
+            <arg value="--only-lingeling"/>
+        </exec>
+        <exec executable="make" dir="${boolectorDir}/build"/>
+    </target>
+
+    <target name="Make shared lib to JavaBoolector" depends="Install boolector">
+        <exec executable="./lib_in_resources.sh" dir="${boolector.c.dir}"/>
+    </target>
+</project>
