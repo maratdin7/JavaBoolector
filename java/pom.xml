@@ -10,6 +10,8 @@
 
     <properties>
         <boolector.c.dir>${project.basedir}/../c</boolector.c.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
     </properties>
     <build>
         <plugins>
@@ -47,6 +49,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>

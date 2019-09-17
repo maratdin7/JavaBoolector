@@ -16,7 +16,7 @@ public class BoolectorNodeTest {
         BitvecNode y = BitvecNode.var(sort, "nullINc", true);
         BitvecNode ansXor = x.xor(y);
         BitvecNode ansOr = andNot(x, y).or(andNot(y, x));
-        BoolNode eq = ansXor.eq(ansOr); //fdskfdjsfkjdsklfjdskfjkldsjfkl
+        BoolNode eq = ansXor.eq(ansOr);
         BoolNode formula = eq.not();
         formula.assertForm();
         BoolectorSat.Status result = BoolectorSat.getBoolectorSat();
@@ -45,7 +45,7 @@ public class BoolectorNodeTest {
         BoolNode varsSgt = varsSgtZero.and(overflow);
         BoolNode ans = varsSgt.implies(addSgtZero);
         BoolectorSat.simplify();
-        assertFormuls(btor, ans);
+        assertFormulae(btor, ans);
     }
 
     @Test
@@ -253,7 +253,7 @@ public class BoolectorNodeTest {
         btor.btorRelease();
     }
 
-    private static void assertFormuls(Btor btor, BoolNode node) {
+    private static void assertFormulae(Btor btor, BoolNode node) {
         BoolNode formula = node.not();
         formula.assertForm();
         BoolectorSat.Status ans = BoolectorSat.getBoolectorSat();
