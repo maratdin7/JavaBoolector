@@ -2,7 +2,7 @@ package org.jetbrains.research.boolector;
 
 public class BoolSort extends BoolectorSort {
     BoolSort(long ref) {
-        super(ref);
+        super(ref, 1);
     }
 
     public static BoolSort boolSort() {

@@ -16,7 +16,7 @@ public class BoolectorFun extends BoolectorObject {
         }
 
         public static FuncParam param(BoolectorSort sort, String name) {
-            if (name == null ) return new FuncParam(Native.param(sort.ref, "nullInC"));
+            if (name == null) return new FuncParam(Native.param(sort.ref, "nullInC"));
             else return new FuncParam(Native.param(sort.ref, name));
         }
     }

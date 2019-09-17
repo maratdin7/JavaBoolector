@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="boolector-build">
+    <property name="boolectorDir" value="${basedir}/boolector"/>
+
+    <target name="clone-boolector">
+        <exec executable="git" dir="${basedir}">
+            <arg value="submodule"/>
+            <arg value="init"/>
+        </exec>
+
+        <exec executable="git" dir="${basedir}" failifexecutionfails="true">
+            <arg value="submodule"/>
+            <arg value="update"/>
+        </exec>
+    </target>
+
+    <target name="check-file" depends="clone-boolector">
+        <condition property="build.found">
+            <not>
+                <available file="${basedir}/boolector/build"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="build-boolector" depends="check-file" if="${build.found}">
+        <exec executable="./contrib/setup-lingeling.sh" dir="${boolectorDir}"/>
+        <exec executable="./contrib/setup-btor2tools.sh" dir="${boolectorDir}"/>
+        <exec executable="./configure.sh" dir="${boolectorDir}">
+            <arg value="--shared"/>
+            <arg value="--only-lingeling"/>
+        </exec>
+        <exec executable="make" dir="${boolectorDir}/build" failifexecutionfails="true"/>
+    </target>
+
+    <target name="copy-boolector-lib" depends="build-boolector">
+        <property name ="boolectorLib" value="${basedir}/target/classes/libboolector-${project.version}.so"/>
+        <exec executable="cp" dir="${basedir}" failifexecutionfails="true">
+            <arg value="${boolectorDir}/build/lib/libboolector.so"/>
+            <arg value="${boolectorLib}"/>
+        </exec>
+    </target>
+
+    <target name="build-jni" depends="copy-boolector-lib">
+        <exec executable="make" dir="${basedir}" failifexecutionfails="true"/>
+    </target>
+</project>

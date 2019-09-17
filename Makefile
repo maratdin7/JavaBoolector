@@ -17,33 +17,12 @@ OBJECTS=$(SOURCES:$(SOURCES_DIR)/%.c=$(OBJECTS_DIR)/%.o)
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): $(OBJECTS) 
-	echo ${BASE_DIR}
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-$(OBJECTS): $(SOURCES) $(BOOLECTOR_EXECUTABLE)
+$(OBJECTS): $(SOURCES)
 	mkdir -p $(OBJECTS_DIR)
 	$(CC) $(CFLAGS) $< -o $@
 
-.ONESHELL:
-.boolector:
-	git submodule init
-	git submodule update
-
-	cd ${BASE_DIR}/boolector
-	./contrib/setup-lingeling.sh || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
-	./contrib/setup-btor2tools.sh || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
-	./configure.sh --shared --only-lingeling || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
-	cd build
-	make || (cd ${BASE_DIR} && rm -rf ${BOOLECTOR_DIR} && exit 1)
-	cd ${BASE_DIR}
-	touch $@
-
-$(BOOLECTOR_EXECUTABLE): .boolector
-	cp ${BOOLECTOR_DIR}/build/lib/libboolector.so ${BOOLECTOR_EXECUTABLE}
-
 clean:
-	rm -rfi $(OBJECTS_DIR) $(EXECUTABLE) $(BOOLECTOR_EXECUTABLE)
-
-clean.boolector:
-	rm -f .boolector
+	rm -rfi $(OBJECTS_DIR) $(EXECUTABLE)

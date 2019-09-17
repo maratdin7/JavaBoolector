@@ -139,4 +139,6 @@ public final class Native {
     static native long bitvecAssignment(long ref);
 
     static native long matchNodeByName(String name);
+
+    static native long ugt(long firstRef, long secondRef);
 }

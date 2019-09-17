@@ -559,6 +559,14 @@ JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_bitvecAssig
 JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_matchNodeByName
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     org_jetbrains_research_boolector_Native
+ * Method:    ugt
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_ugt
+  (JNIEnv *, jclass, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif

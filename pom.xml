@@ -10,6 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
     </properties>
 
     <dependencies>
@@ -34,15 +35,17 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                         <configuration>
-                            <target
-                                    name="jni"
-                                    description="Generate headers and compile the native code">
+                            <target name="jni" description="Generate headers and compile the native code">
                                 <echo>Generating JNI headers</echo>
                                 <exec executable="javah">
                                     <arg value="-d"/>
@@ -52,13 +55,23 @@
                                     <arg value="-force"/>
                                     <arg value="org.jetbrains.research.boolector.Native"/>
                                 </exec>
-
-                                <exec executable="make"/>
+                            </target>
+                            <target name="Ant">
+                                <ant antfile="build.xml" target="build-jni"/>
                             </target>
                         </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>default-cli</id>
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <target name="Remove boolector">
+                                <delete dir="${boolector.c.dir}/boolector/build/"/>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

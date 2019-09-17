@@ -4,109 +4,116 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BitvecNode extends BoolectorNode {
-    private static Integer numberBitvec = 0;
 
-    private static Set<String> setConstName = new HashSet<>(); // мб HashMap и без matchNodeByName
+    private static Set<String> setConstName = new HashSet<>();
 
     static void setConstNameClear() {
         setConstName.clear();
     }
 
-    BitvecNode(long ref) {
-        super(ref);
+    BitvecNode(long ref, String name, Integer width) {
+        super(ref, name, width, TypeNode.BITVECNODE);
     }
 
-    static BitvecNode var(BitvecSort sort, String name, boolean fresh) {
-        if (fresh) return new BitvecNode(Native.var(sort.ref, name + "!" + numberBitvec++));
-        else if (setConstName.contains(name)) return matchNodeByName(name);
+    public static BitvecNode var(BitvecSort sort, String name, boolean fresh) {
+        if (fresh) {
+            name = name + "!" + numberOfNames++;
+            return new BitvecNode(Native.var(sort.ref, name), name, sort.getWidth());
+        } else if (setConstName.contains(name)) return matchNodeByName(name);
         else {
             setConstName.add(name);
-            return new BitvecNode(Native.var(sort.ref, name));
+            return new BitvecNode(Native.var(sort.ref, name), name, sort.getWidth());
         }
     }
 
     public static BitvecNode matchNodeByName(String name) {
-        return new BitvecNode((Native.matchNodeByName(name)));
+        return new BitvecNode(Native.matchNodeByName(name), name, null);
     }
 
-    static BitvecNode zero(BitvecSort sort) {
-        return new BitvecNode(Native.zero(sort.ref));
+    public static BitvecNode zero(BitvecSort sort) {
+        return new BitvecNode(Native.zero(sort.ref), null, sort.getWidth());
     }
 
-    static BitvecNode constBitvec(String bits) {
-        return new BitvecNode(Native.constBitvec(bits));
+    public static BitvecNode constBitvec(String bits) {
+        return new BitvecNode(Native.constBitvec(bits), null, bits.length());
     }
 
-    static BitvecNode constInt(int value, BitvecSort sort) {
-        return new BitvecNode(Native.constInt(value, sort.ref));
+    public static BitvecNode constInt(int value, BitvecSort sort) {
+        return new BitvecNode(Native.constInt(value, sort.ref), null, sort.getWidth());
     }
 
-    static BitvecNode constLong(long value, BitvecSort sort) {
-        return new BitvecNode(Native.constLong(String.valueOf(value), sort.ref));
+    public static BitvecNode constLong(long value, BitvecSort sort) {
+        return new BitvecNode(Native.constLong(String.valueOf(value), sort.ref), null, sort.getWidth());
     }
 
     public BitvecNode sext(int width) {
-        return new BitvecNode(Native.sext(ref, width));
+        int curSize = getWidth();
+        return new BitvecNode(Native.sext(ref, width - curSize), null, width);
     }
 
     public BitvecNode uext(int width) {
-        return new BitvecNode(Native.uext(ref, width));
+        int curSize = getWidth();
+        return new BitvecNode(Native.uext(ref, width - curSize), null, width);
     }
 
     public BitvecNode slice(int upper, int lower) {
-        return new BitvecNode(Native.slice(ref, upper, lower));
+        return new BitvecNode(Native.slice(ref, upper, lower), null, upper - lower + 1);
     }
 
     public BitvecNode not() {
-        return new BitvecNode(Native.not(ref));
+        return new BitvecNode(Native.not(ref), null, getWidth());
     }
 
     public BitvecNode add(BitvecNode bvNode) {
-        return new BitvecNode(Native.add(ref, bvNode.ref));
+        return new BitvecNode(Native.add(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode and(BitvecNode bvNode) {
-        return new BitvecNode(Native.and(ref, bvNode.ref));
+        return new BitvecNode(Native.and(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode or(BitvecNode bvNode) {
-        return new BitvecNode(Native.or(ref, bvNode.ref));
+        return new BitvecNode(Native.or(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode xor(BitvecNode bvNode) {
-        return new BitvecNode(Native.xor(ref, bvNode.ref));
+        return new BitvecNode(Native.xor(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode neg() {
-        return new BitvecNode(Native.neg(ref));
+        return new BitvecNode(Native.neg(ref), null, getWidth());
     }
 
     public BitvecNode sub(BitvecNode bvNode) {
-        return new BitvecNode(Native.sub(ref, bvNode.ref));
+        return new BitvecNode(Native.sub(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode mul(BitvecNode bvNode) {
-        return new BitvecNode(Native.mul(ref, bvNode.ref));
+        return new BitvecNode(Native.mul(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode sdiv(BitvecNode bvNode) {
-        return new BitvecNode(Native.sdiv(ref, bvNode.ref));
+        return new BitvecNode(Native.sdiv(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode udiv(BitvecNode bvNode) {
-        return new BitvecNode(Native.udiv(ref, bvNode.ref));
+        return new BitvecNode(Native.udiv(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode smod(BitvecNode bvNode) {
-        return new BitvecNode(Native.smod(ref, bvNode.ref));
+        return new BitvecNode(Native.smod(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode urem(BitvecNode bvNode) {
-        return new BitvecNode(Native.urem(ref, bvNode.ref));
+        return new BitvecNode(Native.urem(ref, bvNode.ref), null, getWidth());
     }
 
     public BoolNode sgt(BitvecNode bvNode) {
         return new BoolNode(Native.sgt(ref, bvNode.ref));
+    }
+
+    public BoolNode ugt(BitvecNode bvNode) {
+        return new BoolNode(Native.ugt(ref, bvNode.ref));
     }
 
     public BoolNode sgte(BitvecNode bvNode) {
@@ -122,19 +129,20 @@ public class BitvecNode extends BoolectorNode {
     }
 
     public BitvecNode sll(BitvecNode bvNode) {
-        return new BitvecNode(Native.sll(ref, bvNode.ref));
+        return new BitvecNode(Native.sll(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode srl(BitvecNode bvNode) {
-        return new BitvecNode(Native.srl(ref, bvNode.ref));
+        return new BitvecNode(Native.srl(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode sra(BitvecNode bvNode) {
-        return new BitvecNode(Native.sra(ref, bvNode.ref));
+        return new BitvecNode(Native.sra(ref, bvNode.ref), null, getWidth());
     }
 
     public BitvecNode concat(BitvecNode bvNode) {
-        return new BitvecNode(Native.concat(ref, bvNode.ref));
+        int width = getWidth() + bvNode.getWidth();
+        return new BitvecNode(Native.concat(ref, bvNode.ref), null, width);
     }
 
     public String getBits() {

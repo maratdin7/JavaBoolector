@@ -3,10 +3,11 @@
 *.iml
 *.class
 *.so
+*.cbp
+/c/CMakeFiles
 */.idea
 *.txt
 !'.git'
 
 /.idea/
 /target/
-.boolector

@@ -50,11 +50,19 @@ JNIEXPORT jint JNICALL Java_org_jetbrains_research_boolector_Native_simplify(JNI
 }
 
 JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_printModel(JNIEnv *env, jobject jobj) {
-    FILE* tempFile = tmpfile();
-    boolector_print_model(btor, "smt2", tempFile);
-    jstring result = readFileContent(env, tempFile);
-    fclose(tempFile);
-    return result;
+    FILE *tmp_model = tmpfile();
+    boolector_print_model(btor, "smt2", tmp_model);
+    jstring model = readFileContent(env, tmp_model);
+    fclose(tmp_model);
+    return model;
+}
+
+JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
+    FILE *tmp_dump = tmpfile();
+    boolector_dump_smt2(btor, tmp_dump);
+    jstring model = readFileContent(env, tmp_dump);
+    fclose(tmp_dump);
+    return model;
 }
 
 JNIEXPORT void JNICALL Java_org_jetbrains_research_boolector_Native_btorRelease(JNIEnv *env, jobject jobj) {
@@ -71,9 +79,7 @@ Java_org_jetbrains_research_boolector_Native_var(JNIEnv *env, jobject jobj, jlon
     const char *str = (*env)->GetStringUTFChars(env, jsymbol, 0);
     if (strncmp(str, "nullINc", 7) == 0) {
         node = boolector_var(btor, sort, NULL);
-    } else {
-        node = boolector_var(btor, sort, str);
-    }
+    } else { node = boolector_var(btor, sort, str); }
     (*env)->ReleaseStringUTFChars(env, jsymbol, str);
     return (jlong) node;
 }
@@ -81,7 +87,7 @@ Java_org_jetbrains_research_boolector_Native_var(JNIEnv *env, jobject jobj, jlon
 JNIEXPORT jlong JNICALL
 Java_org_jetbrains_research_boolector_Native_matchNodeByName(JNIEnv *env, jobject jobj, jstring jsymbol) {
     const char *str = (*env)->GetStringUTFChars(env, jsymbol, 0);
-    BoolectorNode *node = boolector_match_node_by_symbol(btor,str);
+    BoolectorNode *node = boolector_match_node_by_symbol(btor, str);
     (*env)->ReleaseStringUTFChars(env, jsymbol, str);
     return (jlong) node;
 }
@@ -144,41 +150,49 @@ JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_zero(JNIEnv
     return (jlong) boolector_zero(btor, sort);
 }
 
-#define BINARY_OP(opcode) \
-JNIEXPORT jlong JNICALL \
-Java_org_jetbrains_research_boolector_Native_##opcode(JNIEnv *env, jobject jobj, jlong jnode_first_ref, \
-                                                jlong jnode_second_ref) { \
-    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref; \
-    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref; \
-    return (jlong) boolector_##opcode(btor, first_node, second_node); \
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_eq(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_eq(btor, first_node, second_node);
 }
-
-BINARY_OP(eq);
-BINARY_OP(add);
-BINARY_OP(and);
-BINARY_OP(or);
-BINARY_OP(xor);
-BINARY_OP(sub);
-BINARY_OP(mul);
-BINARY_OP(sdiv);
-BINARY_OP(udiv);
-BINARY_OP(smod);
-BINARY_OP(urem);
-BINARY_OP(sgt);
-BINARY_OP(sgte);
-BINARY_OP(slt);
-BINARY_OP(slte);
-BINARY_OP(sll);
-BINARY_OP(srl);
-BINARY_OP(sra);
-BINARY_OP(implies);
-BINARY_OP(iff);
-BINARY_OP(concat);
-
 
 JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_not(JNIEnv *env, jobject jobj, jlong jnode_ref) {
     BoolectorNode *node = (BoolectorNode *) jnode_ref;
     return (jlong) boolector_not(btor, node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_add(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_add(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_and(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_and(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_or(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_or(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_xor(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_xor(btor, first_node, second_node);
 }
 
 JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_neg(JNIEnv *env, jobject jobj, jlong jnode_ref) {
@@ -189,6 +203,118 @@ JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_neg(JNIEnv 
 JNIEXPORT jlong JNICALL Java_org_jetbrains_research_boolector_Native_copy(JNIEnv *env, jobject jobj, jlong jnode_ref) {
     BoolectorNode *node = (BoolectorNode *) jnode_ref;
     return (jlong) boolector_copy(btor, node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sub(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sub(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_mul(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_mul(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sdiv(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sdiv(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_udiv(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_udiv(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_smod(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_smod(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_urem(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_urem(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sgt(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sgt(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sgte(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sgte(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_ugt(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_ugt(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_slt(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_slt(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_slte(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                  jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_slte(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sll(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sll(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_srl(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_srl(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_sra(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_sra(btor, first_node, second_node);
 }
 
 JNIEXPORT jlong JNICALL
@@ -246,6 +372,30 @@ Java_org_jetbrains_research_boolector_Native_write(JNIEnv *env, jobject jobj, jl
 }
 
 JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_implies(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                     jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_implies(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_iff(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                 jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_iff(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_jetbrains_research_boolector_Native_concat(JNIEnv *env, jobject jobj, jlong jnode_first_ref,
+                                                    jlong jnode_second_ref) {
+    BoolectorNode *first_node = (BoolectorNode *) jnode_first_ref;
+    BoolectorNode *second_node = (BoolectorNode *) jnode_second_ref;
+    return (jlong) boolector_concat(btor, first_node, second_node);
+}
+
+JNIEXPORT jlong JNICALL
 Java_org_jetbrains_research_boolector_Native_cond(JNIEnv *env, jobject jobj, jlong jnode_cond_ref,
                                                   jlong jnode_first_ref,
                                                   jlong jnode_second_ref) {
@@ -296,24 +446,6 @@ JNIEXPORT jboolean JNICALL
 Java_org_jetbrains_research_boolector_Native_isBitvecSort(JNIEnv *env, jobject jobj, jlong jsort_ref) {
     BoolectorSort s = (BoolectorSort) jsort_ref;
     return (jboolean) boolector_is_bitvec_sort(btor, s);
-}
-
-JNIEXPORT jint JNICALL
-Java_org_jetbrains_research_boolector_Native_getWidth(JNIEnv *env, jobject jobj, jlong jsort_ref) {
-    BoolectorSort s = (BoolectorSort) jsort_ref;
-    BoolectorNode *node = boolector_var(btor, s, NULL);
-    jint width = (jint) boolector_get_width(btor, node);
-    boolector_release(btor, node);
-    return width;
-}
-
-JNIEXPORT jboolean JNICALL
-Java_org_jetbrains_research_boolector_Native_isBoolSort(JNIEnv *env, jobject jobj, jlong jsort_ref) {
-    BoolectorSort s = (BoolectorSort) jsort_ref;
-    bool isBoolSort =
-            boolector_is_bitvec_sort(btor, s) &&
-            Java_org_jetbrains_research_boolector_Native_getWidth(env, jobj, jsort_ref) == 1;
-    return (jboolean) isBoolSort;
 }
 
 JNIEXPORT jboolean JNICALL
@@ -427,13 +559,6 @@ Java_org_jetbrains_research_boolector_Native_getIndexWidth(JNIEnv *env, jobject 
     return width_index;
 }
 
-JNIEXPORT jstring JNICALL Java_org_jetbrains_research_boolector_Native_dumpSmt2(JNIEnv *env, jobject jobj) {
-    FILE* tempFile = tmpfile();
-    boolector_dump_smt2(btor, tempFile);
-    jstring result = readFileContent(env, tempFile);
-    fclose(tempFile);
-    return result;
-}
 
 JNIEXPORT jboolean JNICALL
 Java_org_jetbrains_research_boolector_Native_boolectorAssert(JNIEnv *env, jobject jobj, jstring jans, jlong jnode_ref) {
