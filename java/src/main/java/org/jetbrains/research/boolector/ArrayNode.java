@@ -22,7 +22,7 @@ public class ArrayNode extends BoolectorNode {
     }
 
     public BitvecNode read(BitvecNode index) {
-        return new BitvecNode(Native.read(ref, index.ref));
+        return new BitvecNode(Native.read(ref, index.ref),null, null);
     }
 
     public ArrayNode write(BitvecNode index, BitvecNode value) {
