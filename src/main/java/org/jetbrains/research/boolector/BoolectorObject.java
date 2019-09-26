@@ -3,13 +3,19 @@ package org.jetbrains.research.boolector;
 import java.util.Objects;
 
 public abstract class BoolectorObject {
+    protected final Btor btor;
     protected final long ref;
 
-    BoolectorObject(long ref) {
+    BoolectorObject(Btor btor, long ref) {
+        this.btor = btor;
         this.ref = ref;
     }
 
     abstract public void release();
+
+    public Btor getBtor() { return btor; }
+
+    long getRef() { return ref; }
 
     public static long[] toLong(BoolectorObject[] boolectorObj) {
         int size = boolectorObj.length;
@@ -30,6 +36,6 @@ public abstract class BoolectorObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ref);
+        return Objects.hash(btor, ref);
     }
 }

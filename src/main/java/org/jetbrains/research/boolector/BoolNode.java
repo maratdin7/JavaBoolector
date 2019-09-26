@@ -1,36 +1,36 @@
 package org.jetbrains.research.boolector;
 
 public class BoolNode extends BoolectorNode {
-    BoolNode(long ref) {
-        super(ref, null, 1, TypeNode.BOOLNODE);
+    BoolNode(Btor btor, long ref) {
+        super(btor, ref, null, 1, TypeNode.BOOLNODE);
     }
 
-    static BoolNode constBool(boolean bool) {
-        return new BoolNode(bool ? Native.constNodeTrue() : Native.constNodeFalse());
+    static BoolNode constBool(Btor btor, boolean bool) {
+        return new BoolNode(btor, bool ? Native.constNodeTrue(btor.getRef()) : Native.constNodeFalse(btor.getRef()));
     }
 
     public BoolNode and(BoolNode boolNode) {
-        return new BoolNode(Native.and(ref, boolNode.ref));
+        return new BoolNode(btor, Native.and(btor.getRef(), ref, boolNode.getRef()));
     }
 
     public BoolNode or(BoolNode boolNode) {
-        return new BoolNode(Native.or(ref, boolNode.ref));
+        return new BoolNode(btor, Native.or(btor.getRef(), ref, boolNode.getRef()));
     }
 
     public BoolNode xor(BoolNode boolNode) {
-        return new BoolNode(Native.xor(ref, boolNode.ref));
+        return new BoolNode(btor, Native.xor(btor.getRef(), ref, boolNode.getRef()));
     }
 
     public BoolNode not() {
-        return new BoolNode(Native.not(ref));
+        return new BoolNode(btor, Native.not(btor.getRef(), ref));
     }
 
     public BoolNode implies(BoolNode boolNode) {
-        return new BoolNode(Native.implies(ref, boolNode.ref));
+        return new BoolNode(btor, Native.implies(btor.getRef(), ref, boolNode.getRef()));
     }
 
     public BoolNode iff(BoolNode boolNode) {
-        return new BoolNode(Native.iff(ref, boolNode.ref));
+        return new BoolNode(btor, Native.iff(btor.getRef(), ref, boolNode.getRef()));
     }
 
     public Boolean assigment() {

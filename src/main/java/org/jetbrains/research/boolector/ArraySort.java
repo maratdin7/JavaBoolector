@@ -2,11 +2,12 @@ package org.jetbrains.research.boolector;
 
 public class ArraySort extends BoolectorSort {
 
-    ArraySort(long ref, Integer width) {
-        super(ref, width);
+    ArraySort(Btor btor, long ref, Integer width) {
+        super(btor, ref, width);
     }
 
     public static ArraySort arraySort(BoolectorSort index, BoolectorSort element) {
-        return new ArraySort(Native.arraySort(index.ref, element.ref), element.getWidth());
+        Btor btor = index.getBtor();
+        return new ArraySort(btor, Native.arraySort(btor.getRef(), index.getRef(), element.getRef()), element.getWidth());
     }
 }
