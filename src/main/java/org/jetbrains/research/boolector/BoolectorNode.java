@@ -2,7 +2,7 @@ package org.jetbrains.research.boolector;
 
 public class BoolectorNode extends BoolectorObject {
     private String name;
-    private TypeNode kind = TypeNode.UNKNOWN;
+    private TypeNode kind;
     protected static int numberOfNames;
     private Integer width;
 
@@ -10,20 +10,15 @@ public class BoolectorNode extends BoolectorObject {
         super(btor, ref);
     }
 
-    BoolectorNode(Btor btor, long ref, String name, Integer width, TypeNode type) {
+    BoolectorNode(Btor btor, long ref, String name, TypeNode type) {
         super(btor, ref);
         this.name = name;
-        this.width = width;
+        this.width = getWidthSort();
         kind = type;
     }
 
     public int getWidth() {
-        if (width == null) width = getWidthSort();
         return width;
-    }
-
-    protected void setWidth(Integer newWidth) {
-        width = newWidth;
     }
 
     public void release() {
@@ -31,7 +26,7 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public BoolectorNode copy() {
-        return new BoolectorNode(btor, Native.copy(btor.getRef(), ref), name, width, kind);
+        return new BoolectorNode(btor, Native.copy(btor.getRef(), ref), name, kind);
     }
 
     public BoolNode eq(BoolectorNode node) {
@@ -71,7 +66,7 @@ public class BoolectorNode extends BoolectorObject {
 
     public BitvecNode toBitvecNode() {
         if (isArrayNode()) throw new ClassCastException();
-        return new BitvecNode(btor, ref, null, getWidth());
+        return new BitvecNode(btor, ref, null);
     }
 
     public BitvecNode toBitvecNode(int castSize) {
@@ -88,7 +83,7 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public ArrayNode toArrayNode() {
-        if (isArrayNode()) return new ArrayNode(btor, ref, name, width);
+        if (isArrayNode()) return new ArrayNode(btor, ref, name);
         else throw new ClassCastException();
     }
 
