@@ -12,12 +12,12 @@ public class FunctionTest {
     @Test
     public void testAll() {
         Btor btor = new Btor();
-        BitvecSort sort = BitvecSort.bitvecSort(8);
+        BitvecSort sort = BitvecSort.bitvecSort(btor, 8);
         BitvecNode x = BitvecNode.var(sort, "nullINc", true);
         BitvecNode y = BitvecNode.var(sort, "nullINc", true);
         BitvecNode a = BitvecNode.constInt(10, sort);
         BitvecNode b = BitvecNode.constInt(20, sort);
-        BitvecNode ab = a.add(b);
+        a.add(b);
 
         BitvecNode temp = x.add(y);
         BoolectorFun.FuncParam firstParam = BoolectorFun.FuncParam.param(sort, "nullINc");

@@ -2,22 +2,24 @@ package org.jetbrains.research.boolector;
 
 public class BoolectorFun extends BoolectorObject {
 
-    BoolectorFun(long ref) {
-        super(ref);
+    BoolectorFun(Btor btor, long ref) {
+        super(btor, ref);
     }
 
     public void release() {
-        Native.releaseNode(ref);
+        Native.releaseNode(btor.getRef(), ref);
     }
 
     public static class FuncParam extends BoolectorFun {
-        FuncParam(long ref) {
-            super(ref);
+        FuncParam(Btor btor, long ref) {
+            super(btor, ref);
         }
 
         public static FuncParam param(BoolectorSort sort, String name) {
-            if (name == null) return new FuncParam(Native.param(sort.ref, "nullInC"));
-            else return new FuncParam(Native.param(sort.ref, name));
+            Btor btor = sort.getBtor();
+            return name == null ?
+                    new FuncParam(btor, Native.param(btor.getRef(), sort.getRef(), "nullInC")) :
+                    new FuncParam(btor, Native.param(btor.getRef(), sort.getRef(), name));
         }
     }
 }
