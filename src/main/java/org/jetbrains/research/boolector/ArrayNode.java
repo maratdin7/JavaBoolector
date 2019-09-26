@@ -9,7 +9,7 @@ public class ArrayNode extends BoolectorNode {
     public static ArrayNode arrayNode(ArraySort sort, String name) {
         Btor btor = sort.getBtor();
         name = name + "!" + numberOfNames++;
-        return new ArrayNode(btor, Native.array(btor.getRef(), sort.ref, name), name, sort.getWidth());
+        return new ArrayNode(btor, Native.array(btor.getRef(), sort.getRef(), name), name, sort.getWidth());
     }
 
     public static ArrayNode constArrayNode(BitvecSort indexSort, BitvecNode element) {
@@ -27,7 +27,7 @@ public class ArrayNode extends BoolectorNode {
     }
 
     public BitvecNode read(BitvecNode index) {
-        return new BitvecNode(btor, Native.read(btor.getRef(), ref, index.ref), null, null);
+        return new BitvecNode(btor, Native.read(btor.getRef(), ref, index.getRef()), null, null);
     }
 
     public ArrayNode write(BitvecNode index, BitvecNode value) {
