@@ -28,15 +28,15 @@ public class FunctionTest {
         BitvecNode first = slt.apply(paramX).toBitvecNode();
         BitvecNode second = slt.apply(paramX).toBitvecNode();
         BoolNode eq = first.eq(second);
-        assertFormuls(btor, eq);
+        assertFormulae(btor, eq);
     }
 
-    private static void assertFormuls(Btor btor, BoolNode node) {
+    private static void assertFormulae(Btor btor, BoolNode node) {
         BoolNode formula = node.not();
         formula.assertForm();
-        BoolectorSat.Status ans = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, ans);
+        Btor.Status ans = btor.check();
+        assertEquals(Btor.Status.UNSAT, ans);
 
-        btor.btorRelease();
+        btor.release();
     }
 }

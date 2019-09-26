@@ -1,4 +1,5 @@
 package org.jetbrains.research.boolector;
+
 import java.util.Objects;
 
 public abstract class BoolectorObject {

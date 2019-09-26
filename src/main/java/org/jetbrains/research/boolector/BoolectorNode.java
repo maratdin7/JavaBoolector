@@ -5,6 +5,7 @@ public class BoolectorNode extends BoolectorObject {
     BoolectorNode(long ref) {
         super(ref);
     }
+
     BoolectorNode(long ref, String name, Integer width, TypeNode type) {
         super(ref);
         this.name = name;
@@ -84,12 +85,12 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public BoolNode toBoolNode() {
-        if (isBoolNode() || (isBitvecNode() && width==1)) return new BoolNode(ref);
+        if (isBoolNode() || (isBitvecNode() && width == 1)) return new BoolNode(ref);
         else throw new ClassCastException();
     }
 
     public ArrayNode toArrayNode() {
-        if (isArrayNode()) return new ArrayNode(ref,name, width);
+        if (isArrayNode()) return new ArrayNode(ref, name, width);
         else throw new ClassCastException();
     }
 
@@ -100,7 +101,7 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public boolean isBoolNode() {
-        if (kind == TypeNode.BOOLNODE || (isBitvecNode() && width==1)) return true;
+        if (kind == TypeNode.BOOLNODE || (isBitvecNode() && width == 1)) return true;
         if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.BOOLNODE;
         else return false;
     }

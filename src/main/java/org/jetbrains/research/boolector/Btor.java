@@ -3,6 +3,29 @@ package org.jetbrains.research.boolector;
 import java.io.IOException;
 
 public class Btor {
+
+    enum Status {
+        SAT(10),
+        UNSAT(20),
+        UNKNOWN(0);
+
+        private final int intValue;
+
+        Status(int intValue) {
+            this.intValue = intValue;
+        }
+
+        public static Status fromInt(int i) {
+            if (SAT.toInt() == i ) return SAT;
+            if (UNSAT.toInt() == i) return UNSAT;
+            return UNKNOWN;
+        }
+
+        public final int toInt() {
+            return this.intValue;
+        }
+    }
+
     public Btor() {
         Native.btor();
     }
@@ -17,7 +40,7 @@ public class Btor {
         }
     }
 
-    public void btorRelease() {
+    public void release() {
         BitvecNode.setConstNameClear();
         Native.btorRelease();
     }
@@ -30,4 +53,11 @@ public class Btor {
         return Native.printModel();
     }
 
+    public int simplify() {
+        return Native.simplify();
+    }
+
+    public Status check() {
+        return Status.fromInt(Native.getSat());
+    }
 }

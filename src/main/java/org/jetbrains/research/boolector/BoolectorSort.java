@@ -18,7 +18,7 @@ public class BoolectorSort extends BoolectorObject {
     }
 
     public boolean isBoolSort() {
-        return (isBitvecSort() && width==1);
+        return (isBitvecSort() && width == 1);
     }
 
     public boolean isArraySort() {

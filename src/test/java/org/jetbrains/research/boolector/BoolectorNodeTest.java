@@ -2,8 +2,6 @@ package org.jetbrains.research.boolector;
 
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class BoolectorNodeTest {
@@ -19,9 +17,9 @@ public class BoolectorNodeTest {
         BoolNode eq = ansXor.eq(ansOr);
         BoolNode formula = eq.not();
         formula.assertForm();
-        BoolectorSat.Status result = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, result);
-        btor.btorRelease();
+        Btor.Status result = btor.check();
+        assertEquals(Btor.Status.UNSAT, result);
+        btor.release();
     }
 
     private BitvecNode andNot(BitvecNode x, BitvecNode y) {
@@ -44,7 +42,7 @@ public class BoolectorNodeTest {
         BoolNode overflow = add.sgt(x);
         BoolNode varsSgt = varsSgtZero.and(overflow);
         BoolNode ans = varsSgt.implies(addSgtZero);
-        BoolectorSat.simplify();
+        btor.simplify();
         assertFormulae(btor, ans);
     }
 
@@ -81,7 +79,7 @@ public class BoolectorNodeTest {
         BitvecNode var = BitvecNode.var(long_sort, "test", false);
         BitvecNode noFresh = BitvecNode.var(long_sort, "test", false);
         x = BitvecNode.constInt(-5, long_sort);
-        BoolectorSat.getBoolectorSat();
+        btor.check();
 
         long assignment = x.assignment();
         BoolNode test = BoolNode.constBool(true);
@@ -108,7 +106,7 @@ public class BoolectorNodeTest {
         assertEquals(-5, assignment);
         assertEquals(var.ref, noFresh.ref);
         assertTrue(test.assigment());
-        btor.btorRelease();
+        btor.release();
     }
 
     @Test
@@ -120,11 +118,11 @@ public class BoolectorNodeTest {
         or = x.or(y);
         xor = x.xor(y);
         iff = x.iff(y);
-        BoolectorSat.getBoolectorSat();
+        btor.check();
         boolectorAssert("1", or);
         boolectorAssert("1", xor);
         boolectorAssert("0", iff);
-        btor.btorRelease();
+        btor.release();
     }
 
     @Test
@@ -140,7 +138,7 @@ public class BoolectorNodeTest {
         BoolectorSort getSort = x.getSort();
         bitvec = BitvecNode.var(getSort.toBitvecSort(), "test", false);
         x.getID();
-        BoolectorSat.getBoolectorSat();
+        btor.check();
         boolectorAssert("000101", ite);
         assertEquals("test", bitvec.getSymbol());
         assertFalse(x.isBoolNode());
@@ -152,7 +150,7 @@ public class BoolectorNodeTest {
             ++i;
         }
         assertEquals(1, i);
-        btor.btorRelease();
+        btor.release();
     }
 
     @Test
@@ -160,13 +158,13 @@ public class BoolectorNodeTest {
         Btor btor = new Btor();
         BoolNode x = BoolNode.constBool(true);
         x.assertForm();
-        BoolectorSat.getBoolectorSat();
+        btor.check();
         assertEquals("(model )\n", btor.printModel());
         assertEquals("(set-logic QF_BV)\n" +
                 "(assert true)\n" +
                 "(check-sat)\n" +
                 "(exit)\n", btor.dumpSmt2());
-        btor.btorRelease();
+        btor.release();
     }
 
     @Test
@@ -186,9 +184,9 @@ public class BoolectorNodeTest {
 
         arrayConst = ArrayNode.constArrayNode(index, x);
         BoolNode eq = arrayConst.read(i).eq(arrayConst.read(j));
-        BoolectorSat.getBoolectorSat();
+        btor.check();
         boolectorAssert("1", eq);
-        btor.btorRelease();
+        btor.release();
     }
 
     @Test
@@ -222,9 +220,9 @@ public class BoolectorNodeTest {
         BoolNode formula = read.ugt(max);
 
         formula.assertForm();
-        BoolectorSat.Status result = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, result);
-        btor.btorRelease();
+        Btor.Status result = btor.check();
+        assertEquals(Btor.Status.UNSAT, result);
+        btor.release();
     }
 
     @Test
@@ -243,22 +241,22 @@ public class BoolectorNodeTest {
         BoolectorNode eq = index1.eq(index2);
         BoolectorNode ne = read1.eq(read2).not();
         eq.assertForm();
-        BoolectorSat.Status result = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.SAT, result);
+        Btor.Status result = btor.check();
+        assertEquals(Btor.Status.SAT, result);
         ne.assume();
-        result = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, result);
-        result = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.SAT, result);
-        btor.btorRelease();
+        result = btor.check();
+        assertEquals(Btor.Status.UNSAT, result);
+        result = btor.check();
+        assertEquals(Btor.Status.SAT, result);
+        btor.release();
     }
 
     private static void assertFormulae(Btor btor, BoolNode node) {
         BoolNode formula = node.not();
         formula.assertForm();
-        BoolectorSat.Status ans = BoolectorSat.getBoolectorSat();
-        assertEquals(BoolectorSat.Status.UNSAT, ans);
-        btor.btorRelease();
+        Btor.Status ans = btor.check();
+        assertEquals(Btor.Status.UNSAT, ans);
+        btor.release();
     }
 
     private static void boolectorAssert(String ans, BoolectorNode node) {

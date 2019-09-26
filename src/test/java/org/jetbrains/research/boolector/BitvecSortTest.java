@@ -13,6 +13,6 @@ public class BitvecSortTest {
         BitvecSort sort = BitvecSort.bitvecSort(8);
         assertTrue(sort.isBitvecSort());
         assertEquals(8,sort.getWidth());
-        btor.btorRelease();
+        btor.release();
     }
 }

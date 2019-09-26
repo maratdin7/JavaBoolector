@@ -62,7 +62,7 @@ public class NativeUtils {
      *
      * @param name name of the library to load
      * @throws IOException if the library cannot be extracted from a jar file
-     * into a temporary file
+     *                     into a temporary file
      */
     public static void loadLibrary(String name) throws IOException {
         try {
@@ -92,6 +92,7 @@ public class NativeUtils {
             System.load(file.getAbsolutePath());
         }
     }
+
     /**
      * Loads library from current JAR archive
      * <p>

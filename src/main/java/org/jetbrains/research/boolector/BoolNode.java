@@ -2,7 +2,7 @@ package org.jetbrains.research.boolector;
 
 public class BoolNode extends BoolectorNode {
     BoolNode(long ref) {
-        super(ref,null, 1, TypeNode.BOOLNODE);
+        super(ref, null, 1, TypeNode.BOOLNODE);
     }
 
     static BoolNode constBool(boolean bool) {
@@ -34,7 +34,7 @@ public class BoolNode extends BoolectorNode {
     }
 
     public Boolean assigment() {
-        return this.toBitvecNode().assignment()==1;
+        return this.toBitvecNode().assignment() == 1;
     }
 
 }
