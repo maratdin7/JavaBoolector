@@ -25,8 +25,8 @@ public class FunctionTest {
         List<BoolectorFun.FuncParam> param = Arrays.asList(firstParam, secondParam);
         Function slt = Function.func(temp, param);
         List<BoolectorNode> paramX = Arrays.asList(x, y);
-        BitvecNode first = slt.apply(paramX).toBitvecNode();
-        BitvecNode second = slt.apply(paramX).toBitvecNode();
+        BitvecNode first = (BitvecNode) slt.apply(paramX);
+        BitvecNode second = (BitvecNode) slt.apply(paramX);
         BoolNode eq = first.eq(second);
         assertFormulae(btor, eq);
     }

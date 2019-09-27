@@ -129,22 +129,15 @@ public class BoolectorNodeTest {
         BoolectorNode x = BitvecNode.constBitvec(btor, "000101");
         BoolectorNode y = BitvecNode.constBitvec(btor, "000011");
 
-        BoolectorNode bool = BitvecNode.constBitvec(btor, "1");
-        BoolectorNode ite = x.ite(bool.toBoolNode(), y);
-        BoolectorNode bitvec = BitvecNode.var(x.getSort().toBitvecSort(), "test", false);
+        BoolNode bool = BoolNode.constBool(btor, true);
+        BoolectorNode ite = x.ite(bool, y);
+        BoolectorNode bitvec = BitvecNode.var((BitvecSort) x.getSort(), "test", false);
         x.getID();
         btor.check();
         boolectorAssert("000101", ite);
         assertEquals("test", bitvec.getSymbol());
         assertFalse(x.isBoolNode());
         assertTrue(bitvec.isBitvecNode());
-        int i = 0;
-        try {
-            bitvec.toArrayNode();
-        } catch (ClassCastException e) {
-            ++i;
-        }
-        assertEquals(1, i);
         btor.release();
     }
 
@@ -170,7 +163,7 @@ public class BoolectorNodeTest {
         BitvecNode i = BitvecNode.constBitvec(btor, "000000");
         BitvecNode j = BitvecNode.constBitvec(btor, "100000");
 
-        BitvecSort index = x.getSort().toBitvecSort();
+        BitvecSort index = (BitvecSort) x.getSort();
         ArraySort sort = ArraySort.arraySort(index, index);
         ArrayNode array = ArrayNode.arrayNode(sort, "Temp");
 
@@ -200,7 +193,7 @@ public class BoolectorNodeTest {
         for (int i = 1; i < 8; i++) {
             read = array.read(indices[i]);
             BoolNode ugt = read.ugt(max);
-            BitvecNode temp = read.ite(ugt, max).toBitvecNode();
+            BitvecNode temp = (BitvecNode) read.ite(ugt, max);
             max.release();
             max = temp;
             read.release();

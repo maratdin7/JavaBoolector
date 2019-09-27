@@ -1,6 +1,6 @@
 package org.jetbrains.research.boolector;
 
-public class BoolectorFun extends BoolectorObject {
+public abstract class BoolectorFun extends BoolectorObject {
 
     BoolectorFun(Btor btor, long ref) {
         super(btor, ref);

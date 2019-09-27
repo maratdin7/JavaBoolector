@@ -14,7 +14,7 @@ public class ArrayNode extends BoolectorNode {
 
     public static ArrayNode constArrayNode(BitvecSort indexSort, BitvecNode element) {
         Btor btor = indexSort.getBtor();
-        BitvecSort elementsSort = element.getSort().toBitvecSort();
+        BitvecSort elementsSort = (BitvecSort) element.getSort();
         ArraySort arraySort = ArraySort.arraySort(indexSort, elementsSort);
         return new ArrayNode(btor,
                 Native.constArray(btor.getRef(), arraySort.getRef(), indexSort.getRef(), element.getRef()),

@@ -12,7 +12,7 @@ public class Function extends BoolectorFun {
 
     public BoolectorNode apply(List<BoolectorNode> argNodesFunc) {
         long[] argNodes = toLong(argNodesFunc.toArray(new BoolectorNode[0]));
-        return new BoolectorNode(btor, Native.apply(btor.getRef(), argNodes, argNodes.length, ref));
+        return BoolectorNode.create(btor, Native.apply(btor.getRef(), argNodes, argNodes.length, ref), null);
     }
 
     public long[] getParams() {

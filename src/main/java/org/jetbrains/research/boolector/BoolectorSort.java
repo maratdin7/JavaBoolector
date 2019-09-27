@@ -1,11 +1,17 @@
 package org.jetbrains.research.boolector;
 
-public class BoolectorSort extends BoolectorObject {
+public abstract class BoolectorSort extends BoolectorObject {
     private Integer width;
 
     BoolectorSort(Btor btor, long ref, Integer width) {
         super(btor, ref);
         this.width = width;
+    }
+
+    static BoolectorSort fromSort(Btor btor, long ref, Integer width) {
+        if (Native.isArraySort(btor.getRef(), ref)) return new ArraySort(btor, ref, width);
+        else if (Native.isBitvecSort(btor.getRef(), ref)) return new BitvecSort(btor, ref, width);
+        else return new BoolSort(btor, ref);
     }
 
     public int getWidth() {
@@ -22,21 +28,6 @@ public class BoolectorSort extends BoolectorObject {
 
     public boolean isArraySort() {
         return Native.isArraySort(btor.getRef(), ref);
-    }
-
-    public BitvecSort toBitvecSort() {
-        if (isArraySort()) throw new ClassCastException();
-        else return new BitvecSort(btor, ref, width);
-    }
-
-    public BoolSort toBoolSort() {
-        if (isBoolSort()) return new BoolSort(btor, ref);
-        else throw new ClassCastException();
-    }
-
-    public ArraySort toArraySort() {
-        if (isArraySort()) return new ArraySort(btor, ref, width);
-        else throw new ClassCastException();
     }
 
     public void release() {

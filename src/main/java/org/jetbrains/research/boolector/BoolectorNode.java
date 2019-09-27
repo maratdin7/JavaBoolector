@@ -1,10 +1,12 @@
 package org.jetbrains.research.boolector;
 
-public class BoolectorNode extends BoolectorObject {
-    private String name;
-    private TypeNode kind;
+public abstract class BoolectorNode extends BoolectorObject {
     protected static int numberOfNames;
+
+    protected String name;
+    private TypeNode kind;
     private Integer width;
+    private BoolectorSort sort;
 
     BoolectorNode(Btor btor, long ref) {
         super(btor, ref);
@@ -14,7 +16,16 @@ public class BoolectorNode extends BoolectorObject {
         super(btor, ref);
         this.name = name;
         this.width = getWidthSort();
-        kind = type;
+        this.kind = type;
+        this.sort = BoolectorSort.fromSort(btor, Native.getSort(btor.getRef(), ref), getWidth());
+    }
+
+    static BoolectorNode create(Btor btor, long ref, String name) {
+        Integer width = Native.getWidthNode(btor.getRef(), ref);
+        BoolectorSort sort = BoolectorSort.fromSort(btor, Native.getSort(btor.getRef(), ref), width);
+        if (sort.isArraySort()) return new ArrayNode(btor, ref, name);
+        else if (sort.isBitvecSort()) return new BitvecNode(btor, ref, name);
+        else return new BoolNode(btor, ref);
     }
 
     public int getWidth() {
@@ -26,7 +37,7 @@ public class BoolectorNode extends BoolectorObject {
     }
 
     public BoolectorNode copy() {
-        return new BoolectorNode(btor, Native.copy(btor.getRef(), ref), name, kind);
+        return BoolectorNode.create(btor, Native.copy(btor.getRef(), ref), name);
     }
 
     public BoolNode eq(BoolectorNode node) {
@@ -36,11 +47,11 @@ public class BoolectorNode extends BoolectorObject {
 
     public BoolectorNode ite(BoolNode cond, BoolectorNode elseNode) {
         assert (this.btor == cond.btor && this.btor == elseNode.btor);
-        return new BoolectorNode(btor, Native.cond(btor.getRef(), cond.getRef(), ref, elseNode.getRef()));
+        return BoolectorNode.create(btor, Native.cond(btor.getRef(), cond.getRef(), ref, elseNode.getRef()), null);
     }
 
-    public BoolectorSort getSort() {//если уже изменялся все сломается
-        return new BoolectorSort(btor, Native.getSort(btor.getRef(), ref), getWidth());
+    public BoolectorSort getSort() {
+        return BoolectorSort.fromSort(btor, Native.getSort(btor.getRef(), ref), getWidth());
     }
 
     public int getID() {
@@ -64,65 +75,24 @@ public class BoolectorNode extends BoolectorObject {
         Native.assume(btor.getRef(), ref);
     }
 
-    public BitvecNode toBitvecNode() {
-        if (isArrayNode()) throw new ClassCastException();
-        return new BitvecNode(btor, ref, null);
-    }
-
     public BitvecNode toBitvecNode(int castSize) {
-        BitvecNode node = toBitvecNode();
+        BitvecNode node = (BitvecNode) this;
         int curSize = getWidth();
         if (curSize == castSize) return node;
         else if (curSize < castSize) return node.sext(castSize);
         else return node.slice(castSize, 0);
     }
 
-    public BoolNode toBoolNode() {
-        if (isBoolNode() || (isBitvecNode() && width == 1)) return new BoolNode(btor, ref);
-        else throw new ClassCastException();
-    }
-
-    public ArrayNode toArrayNode() {
-        if (isArrayNode()) return new ArrayNode(btor, ref, name);
-        else throw new ClassCastException();
-    }
-
     public boolean isArrayNode() {
-        if (kind == TypeNode.ARRAYNODE) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.ARRAYNODE;
-        else return false;
+        return kind == TypeNode.ARRAYNODE;
     }
 
     public boolean isBoolNode() {
-        if (kind == TypeNode.BOOLNODE || (isBitvecNode() && width == 1)) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.BOOLNODE;
-        else return false;
+        return kind == TypeNode.BOOLNODE || (isBitvecNode() && width == 1);
     }
 
     public boolean isBitvecNode() {
-        if (kind == TypeNode.BITVECNODE) return true;
-        if (kind == TypeNode.UNKNOWN) return kindNode() == TypeNode.BITVECNODE;
-        else return false;
-    }
-
-    private TypeNode kindNode() {
-        int kindObj = Native.kindNode(btor.getRef(), ref);
-        switch (kindObj) {
-            case 0:
-            case 3:
-                kind = TypeNode.BOOLNODE;
-                return kind;
-            case 1:
-            case 4:
-                kind = TypeNode.BITVECNODE;
-                return kind;
-            case 2:
-                kind = TypeNode.ARRAYNODE;
-                return kind;
-            default:
-                kind = TypeNode.UNKNOWN;
-                return kind;
-        }
+        return kind == TypeNode.BITVECNODE;
     }
 }
 

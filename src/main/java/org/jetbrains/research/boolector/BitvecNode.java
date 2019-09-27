@@ -145,7 +145,6 @@ public class BitvecNode extends BoolectorNode {
     }
 
     public BitvecNode concat(BitvecNode bvNode) {
-        int width = getWidth() + bvNode.getWidth();
         return new BitvecNode(btor, Native.concat(btor.getRef(), ref, bvNode.getRef()), null);
     }
 

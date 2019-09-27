@@ -34,7 +34,7 @@ public class BoolNode extends BoolectorNode {
     }
 
     public Boolean assigment() {
-        return this.toBitvecNode().assignment() == 1;
+        return Native.bitvecAssignment(btor.getRef(), ref) == 1;
     }
 
 }
