@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>
-#include <btorlog.h>
 #include <stdlib.h>
 #include <math.h>
 

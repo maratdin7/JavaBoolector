@@ -29,62 +29,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>generate-headers</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target name="jni" description="Generate headers and compile the native code">
-                                <echo>Generating JNI headers</echo>
-                                <exec executable="javah">
-                                    <arg value="-d"/>
-                                    <arg value="${project.basedir}/src/main/c"/>
-                                    <arg value="-classpath"/>
-                                    <arg value="${project.basedir}/src/main/java"/>
-                                    <arg value="-force"/>
-                                    <arg value="org.jetbrains.research.boolector.Native"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>build-library</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target name="Ant">
-                                <ant antfile="build.xml" target="build-jni"/>
-                            </target>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>default-cli</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target name="Remove boolector">
-                                <delete dir="${project.basedir}/boolector/build/"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

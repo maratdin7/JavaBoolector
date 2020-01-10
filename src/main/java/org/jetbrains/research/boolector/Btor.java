@@ -35,8 +35,8 @@ public class Btor {
 
     static {
         try {
-            NativeUtils.loadLibraryFromJar("/libboolector-3.0.0.so");
-            NativeUtils.loadLibraryFromJar("/libboolector-jni-3.0.0.so");
+            NativeUtils.loadLibrary("boolector");
+            NativeUtils.loadLibrary("boolector-java");
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Unable to load dynamic libraries");
